@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NoteShare - Student Note Sharing Platform</title>
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- Background decorations -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- Header Navigation -->
+  <header>
+    <div class="container navbar">
+      <a href="#/explore" class="logo" id="btn-logo">
+        <i class="fa-solid fa-graduation-cap"></i>
+        <span>NoteShare</span>
+      </a>
+
+      <!-- SPA Route Navigation Links -->
+      <div class="nav-links" id="main-nav-links">
+        <a href="#/explore" class="nav-link active" id="nav-link-explore">
+          <i class="fa-solid fa-compass"></i> <span>Explore</span>
+        </a>
+        <a href="#/my-uploads" class="nav-link" id="nav-link-uploads" style="display: none;">
+          <i class="fa-solid fa-folder-open"></i> <span>My Uploads</span>
+        </a>
+        <a href="#/saved-notes" class="nav-link" id="nav-link-saved" style="display: none;">
+          <i class="fa-solid fa-heart"></i> <span>Saved</span>
+        </a>
+        <a href="#/about" class="nav-link" id="nav-link-about">
+          <i class="fa-solid fa-circle-info"></i> <span>About</span>
+        </a>
+      </div>
+
+      <nav>
+        <button class="btn btn-secondary btn-icon" id="btn-search-trigger" title="Search Notes">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        <a href="#/share-note" class="btn btn-primary" id="btn-create-note-trigger" style="display: none;">
+          <i class="fa-solid fa-plus"></i> Share Note
+        </a>
+
+        <!-- Auth actions -->
+        <div class="auth-buttons" id="auth-actions-logged-out">
+          <button class="btn btn-outline" id="btn-signin-modal">Sign In</button>
+          <button class="btn btn-primary" id="btn-signup-modal">Join Now</button>
+        </div>
+
+        <!-- User profile dropdown -->
+        <div class="user-profile-menu" id="auth-actions-logged-in" style="display: none;">
+          <div class="avatar" id="user-avatar-trigger">
+            <span id="user-avatar-initials">U</span>
+            <div class="dropdown-menu" id="profile-dropdown">
+              <div class="dropdown-header">
+                <p class="dropdown-username" id="nav-username">username</p>
+                <p class="dropdown-email" id="nav-email">email@student.com</p>
+              </div>
+              <hr>
+              <a href="#/my-uploads"><i class="fa-solid fa-book-open"></i> My Uploads</a>
+              <a href="#/saved-notes"><i class="fa-regular fa-heart"></i> Saved Notes</a>
+              <a href="#" id="btn-logout" class="text-danger"><i class="fa-solid fa-right-from-bracket"></i> Sign
+                Out</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- ========================================== -->
+    <!-- VIEW 1: EXPLORE DASHBOARD -->
+    <!-- ========================================== -->
+    <div id="view-explore" class="app-view active">
+      <!-- Hero / Intro Section -->
+      <section class="hero-section" id="hero-banner">
+        <div class="hero-content">
+          <h1>Share Knowledge, <br><span class="text-gradient">Elevate Learning.</span></h1>
+          <p>A beautiful note-sharing ecosystem designed for students. Upload your lectures, discover peer summaries,
+            rate notes, and comment to collaborate.</p>
+
+          <!-- Main Search Bar -->
+          <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="search-input" placeholder="Search by title, subject, or author...">
+            <button class="btn btn-primary" id="btn-search-go">Search</button>
+          </div>
+
+          <!-- Quick Filters -->
+          <div class="quick-filters">
+            <span>Popular Subjects:</span>
+            <button class="filter-tag active" data-subject="">All</button>
+            <button class="filter-tag" data-subject="Computer Science">CS</button>
+            <button class="filter-tag" data-subject="Mathematics">Math</button>
+            <button class="filter-tag" data-subject="Physics">Physics</button>
+            <button class="filter-tag" data-subject="Chemistry">Chemistry</button>
+            <button class="filter-tag" data-subject="Biology">Biology</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Dashboard Workspace -->
+      <div class="dashboard-layout">
+        <section class="notes-section">
+          <div class="section-header">
+            <h2 id="section-title">Explore Shared Notes</h2>
+            <div class="display-controls">
+              <span class="results-count" id="results-count">0 items found</span>
+            </div>
+          </div>
+
+          <!-- Loader -->
+          <div class="loader-container" id="notes-loader">
+            <div class="spinner"></div>
+            <p>Loading notes...</p>
+          </div>
+
+          <!-- Empty state -->
+          <div class="empty-state" id="notes-empty" style="display: none;">
+            <i class="fa-regular fa-folder-open"></i>
+            <h3>No notes found</h3>
+            <p>Be the first to upload a note for this subject!</p>
+            <a href="#/share-note" class="btn btn-primary" id="btn-empty-upload">Upload Note</a>
+          </div>
+
+          <!-- Notes list -->
+          <div class="notes-grid" id="notes-grid">
+            <!-- Note Cards -->
+          </div>
+        </section>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar-filters">
+          <div class="sidebar-card">
+            <h3>Filter by Subject</h3>
+            <ul class="subject-list" id="subject-list-filters">
+              <!-- Subjects dynamic -->
+            </ul>
+          </div>
+
+          <div class="sidebar-card">
+            <h3>Popular Tags</h3>
+            <div class="tags-cloud" id="tags-cloud-filters">
+              <!-- Tags dynamic -->
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: MY UPLOADS -->
+    <!-- ========================================== -->
+    <div id="view-my-uploads" class="app-view">
+      <div class="view-header">
+        <h2>My Shared Contributions</h2>
+        <p class="subtitle">Review and manage notes you have shared with the community.</p>
+      </div>
+
+      <div class="notes-grid" id="my-uploads-grid">
+        <!-- User uploads cards dynamic -->
+      </div>
+
+      <div class="empty-state" id="my-uploads-empty" style="display: none;">
+        <i class="fa-regular fa-paper-plane"></i>
+        <h3>You haven't shared any notes yet</h3>
+        <p>Your contributions help students succeed. Post your lecture notes or study guides today!</p>
+        <a href="#/share-note" class="btn btn-primary">Share Your First Note</a>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 3: SAVED/LIKED NOTES -->
+    <!-- ========================================== -->
+    <div id="view-saved-notes" class="app-view">
+      <div class="view-header">
+        <h2>Saved Resources</h2>
+        <p class="subtitle">Quick access to notes you liked or bookmarked.</p>
+      </div>
+
+      <div class="notes-grid" id="saved-notes-grid">
+        <!-- Liked notes cards dynamic -->
+      </div>
+
+      <div class="empty-state" id="saved-notes-empty" style="display: none;">
+        <i class="fa-regular fa-heart"></i>
+        <h3>No saved notes</h3>
+        <p>Explore notes and click the heart icon on any document to save it here.</p>
+        <a href="#/explore" class="btn btn-primary">Explore Notes</a>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 4: SHARE NOTE WORKSPACE -->
+    <!-- ========================================== -->
+    <div id="view-share-note" class="app-view">
+      <div class="workspace-card glass-card">
+        <h2>Share Your Note</h2>
+        <p class="subtitle">Contribute to the student community and help peers succeed!</p>
+
+        <form id="form-upload-note" enctype="multipart/form-data">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="note-title">Note Title</label>
+              <input type="text" id="note-title" required placeholder="e.g., Intro to Neural Networks Summary">
+            </div>
+
+            <div class="form-group">
+              <label for="note-subject">Subject</label>
+              <input type="text" id="note-subject" required placeholder="e.g., Computer Science, Mathematics">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="note-description">Short Description</label>
+            <textarea id="note-description" rows="2" placeholder="Brief outline of topics covered..."></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="note-tags">Tags (comma separated)</label>
+              <input type="text" id="note-tags" placeholder="e.g., AI, exam-prep, midterm">
+            </div>
+
+            <div class="form-group">
+              <label for="note-type">Note Type</label>
+              <select id="note-type">
+                <option value="text">Write Note (Markdown support)</option>
+                <option value="file">Upload File (PDF, Image, Text)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Dynamic Note Area: Written note -->
+          <div class="note-type-section" id="section-note-text">
+            <label for="note-content">Note Content (Markdown supported)</label>
+            <div class="editor-container">
+              <textarea id="note-content"
+                placeholder="Write or paste your notes here... You can use standard Markdown."></textarea>
+            </div>
+          </div>
+
+          <!-- Dynamic Note Area: File Upload -->
+          <div class="note-type-section" id="section-note-file" style="display: none;">
+            <label>Upload Document</label>
+            <div class="file-drop-area" id="file-drop-area">
+              <i class="fa-solid fa-cloud-arrow-up file-icon"></i>
+              <span class="file-message">Drag & drop your file here or click to browse</span>
+              <span class="file-info">(PDF, PNG, JPG, JPEG, TXT - max 10MB)</span>
+              <input type="file" id="note-file-input" name="file">
+            </div>
+            <div class="selected-file-badge" id="selected-file-badge" style="display: none;">
+              <i class="fa-solid fa-file-pdf"></i>
+              <span id="selected-file-name">filename.pdf</span>
+              <button type="button" id="btn-remove-selected-file"><i class="fa-solid fa-trash-can"></i></button>
+            </div>
+          </div>
+
+          <div class="form-alert error" id="upload-error" style="display: none;"></div>
+
+          <div class="modal-footer">
+            <a href="#/explore" class="btn btn-outline" id="btn-cancel-upload">Cancel</a>
+            <button type="submit" class="btn btn-primary" id="btn-submit-note">Share Note</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 5: NOTE DETAIL READER -->
+    <!-- ========================================== -->
+    <div id="view-note-detail" class="app-view">
+      <div class="reader-card glass-card">
+        <div class="reader-back-btn">
+          <a href="#/explore" class="btn btn-outline btn-sm"><i class="fa-solid fa-arrow-left"></i> Back to Explore</a>
+        </div>
+
+        <!-- Detail Header -->
+        <div class="detail-header">
+          <div class="detail-badge-row">
+            <span class="badge badge-subject" id="detail-subject">Subject</span>
+            <div id="detail-tags-container" class="detail-tags">
+              <!-- Tags dynamic -->
+            </div>
+          </div>
+          <h2 id="detail-title">Note Title</h2>
+          <div class="author-meta">
+            <div class="meta-item">
+              <i class="fa-solid fa-user"></i>
+              <span>Uploaded by <strong id="detail-author">Username</strong></span>
+            </div>
+            <div class="meta-item">
+              <i class="fa-regular fa-calendar"></i>
+              <span id="detail-date">July 12, 2026</span>
+            </div>
+            <div class="meta-item">
+              <i class="fa-regular fa-eye"></i>
+              <span id="detail-views">15 views</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-body-layout">
+          <!-- Main Note Content / File link -->
+          <div class="detail-main-content">
+            <div class="description-block">
+              <h3>Description</h3>
+              <p id="detail-description">Description text here.</p>
+            </div>
+
+            <!-- Note Content Area -->
+            <div class="note-view-panel">
+              <!-- If text-based note -->
+              <div id="detail-content-text" class="markdown-preview" style="display: none;">
+                <!-- MD formatted note content -->
+              </div>
+
+              <!-- If file-based note -->
+              <div id="detail-content-file" class="file-view-block" style="display: none;">
+                <i class="fa-solid fa-file-arrow-down file-preview-icon"></i>
+                <div class="file-meta">
+                  <h4 id="detail-file-name">filename.pdf</h4>
+                  <p>This is a shared document file. Click the button below to download and view the contents.</p>
+                </div>
+                <a href="#" target="_blank" class="btn btn-primary" id="btn-download-file">
+                  <i class="fa-solid fa-download"></i> Download Note File
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Side Stats & Engagement (Likes, Comments) -->
+          <aside class="detail-sidebar">
+            <div class="stats-card">
+              <!-- Like actions -->
+              <button class="btn btn-like-large" id="btn-like-note">
+                <i class="fa-regular fa-heart" id="like-icon-state"></i>
+                <span id="detail-likes-count">0</span> Likes
+              </button>
+
+              <button class="btn btn-danger btn-block" id="btn-delete-note" style="display: none;">
+                <i class="fa-regular fa-trash-can"></i> Delete Note
+              </button>
+            </div>
+
+            <div class="comments-card">
+              <h3>Discussion</h3>
+              <div class="comments-list" id="comments-list">
+                <!-- Comments list -->
+              </div>
+
+              <!-- Add Comment Form -->
+              <div class="comment-input-area">
+                <!-- Logged out prompt -->
+                <div id="comment-prompt-auth" class="auth-prompt-overlay">
+                  <p><a href="#" id="link-comment-auth">Sign In</a> to write a comment</p>
+                </div>
+
+                <!-- Active Form -->
+                <form id="form-comment" style="display: none;">
+                  <textarea id="comment-text" required placeholder="Write a constructive comment..."
+                    rows="2"></textarea>
+                  <button type="submit" class="btn btn-primary btn-sm">Post Comment</button>
+                </form>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 6: ABOUT PLATFORM -->
+    <!-- ========================================== -->
+    <div id="view-about" class="app-view">
+      <div class="about-hero">
+        <h1 class="text-gradient">NoteShare Ecosystem</h1>
+        <p>A decentralized note sharing marketplace for students to exchange lecture content, exam summaries, and study
+          guides.</p>
+      </div>
+
+      <!-- App Usage Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-box glass-card">
+          <i class="fa-solid fa-users"></i>
+          <h4>1,200+</h4>
+          <p>Active Students</p>
+        </div>
+        <div class="stat-box glass-card">
+          <i class="fa-solid fa-file-invoice"></i>
+          <h4>4,800+</h4>
+          <p>Shared Summaries</p>
+        </div>
+        <div class="stat-box glass-card">
+          <i class="fa-solid fa-circle-down"></i>
+          <h4>12,000+</h4>
+          <p>Total Downloads</p>
+        </div>
+      </div>
+
+      <div class="about-layout">
+        <!-- FAQ Accordion -->
+        <div class="about-faq glass-card">
+          <h3>Frequently Asked Questions</h3>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>How do I upload notes?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>Sign in to your account, click on the "Share Note" button in the navigation bar. Fill in the title,
+                subject, tags, and select whether you want to write content in Markdown format or upload a file (PDF,
+                TXT, doc) directly from your device.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>Are these resources free?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>Yes! NoteShare is built as an open peer-to-peer sharing catalog where students collaborate and support
+                each other. All shared documents are free to download.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>Can I edit or delete my notes?</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>Yes. If you log in and go to "My Uploads", you'll see a complete list of your shared documents. Opening
+                any of your notes will show a red "Delete Note" button which you can use to remove your content
+                instantly.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info Sidebar card -->
+        <div class="about-community glass-card">
+          <h3>Academic Community</h3>
+          <p>NoteShare helps students bridge knowledge gaps by providing summaries of lectures across computer science,
+            mathematics, physics, and more.</p>
+          <ul class="community-rules">
+            <li><i class="fa-solid fa-circle-check"></i> Authentic materials only</li>
+            <li><i class="fa-solid fa-circle-check"></i> Respect copyrights</li>
+            <li><i class="fa-solid fa-circle-check"></i> Collaborate constructively</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- --- MODALS --- -->
+
+  <!-- AUTH MODAL (SIGN IN & SIGN UP) -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal-content glass-card">
+      <button class="modal-close" id="btn-close-auth-modal"><i class="fa-solid fa-xmark"></i></button>
+
+      <!-- Tab Headers -->
+      <div class="modal-tabs">
+        <button class="modal-tab active" id="tab-signin">Sign In</button>
+        <button class="modal-tab" id="tab-signup">Sign Up</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="form-signin" class="auth-form active">
+        <div class="form-group">
+          <label for="signin-username">Username</label>
+          <div class="input-with-icon">
+            <i class="fa-regular fa-user"></i>
+            <input type="text" id="signin-username" required placeholder="Enter username">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="signin-password">Password</label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="signin-password" required placeholder="••••••••">
+          </div>
+        </div>
+        <div class="form-alert error" id="signin-error" style="display: none;"></div>
+        <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+      </form>
+
+      <!-- Sign Up Form -->
+      <form id="form-signup" class="auth-form">
+        <div class="form-group">
+          <label for="signup-username">Username</label>
+          <div class="input-with-icon">
+            <i class="fa-regular fa-user"></i>
+            <input type="text" id="signup-username" required placeholder="Letters/numbers (min 3 chars)">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="signup-email">Email Address</label>
+          <div class="input-with-icon">
+            <i class="fa-regular fa-envelope"></i>
+            <input type="email" id="signup-email" required placeholder="yourname@school.edu">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="signup-password">Password</label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="signup-password" required placeholder="Minimum 6 characters">
+          </div>
+        </div>
+        <div class="form-alert error" id="signup-error" style="display: none;"></div>
+        <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container footer-content">
+      <p>&copy; 2026 NoteShare. Made for students, by students.</p>
+      <div class="footer-links">
+        <a href="https://github.com" target="_blank"><i class="fa-brands fa-github"></i> GitHub</a>
+        <a href="#/about"><i class="fa-solid fa-circle-info"></i> About</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
